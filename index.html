@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>OSD Design</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=Cairo:wght@500;700;800&display=swap">
+<style>
+:root {
+  /* Layout: asymmetric hero (copy left, live Instagram post editor right), a plain 3-step row, a free-template band with a DM mock, then a ruled contact list. */
+  --bg: #0a0f1a;
+  --surface: #111a2c;
+  --surface-2: #18233a;
+  --line: #25324d;
+  --fg: #eef1f7;
+  --muted: #9eaac1;
+  --accent: #ff5a36;
+  --accent-fg: #0a0f1a;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --font-ar: "Cairo", "Segoe UI", Tahoma, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f2f4f8;
+    --surface: #ffffff;
+    --surface-2: #e8ecf4;
+    --line: #d3dae7;
+    --fg: #0b1322;
+    --muted: #525f78;
+    --accent: #d93a13;
+    --accent-fg: #ffffff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f2f4f8;
+  --surface: #ffffff;
+  --surface-2: #e8ecf4;
+  --line: #d3dae7;
+  --fg: #0b1322;
+  --muted: #525f78;
+  --accent: #d93a13;
+  --accent-fg: #ffffff;
+  color-scheme: light;
+}
+:root[lang="ar"] { --font-display: var(--font-ar); --font-body: var(--font-ar); }
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1120px; margin-inline: auto; }
+main { display: grid; gap: clamp(56px, 9vw, 112px); }
+h1, h2, h3, p { margin: 0; }
+h1, h2 { font-family: var(--font-display); text-wrap: balance; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.logo { display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1; text-decoration: none; color: var(--fg); }
+.logo-word { font-family: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif; font-weight: 800; font-size: 2rem; letter-spacing: -0.04em; }
+.logo-word .dot { color: var(--accent); }
+.logo-sub { font-family: "Figtree", system-ui, sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.34em; color: var(--muted); margin-top: 4px; padding-inline-start: 2px; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 0.8rem 1.3rem; border-radius: 999px; border: 1px solid var(--line);
+  background: transparent; color: var(--fg); font: inherit; font-weight: 600; font-size: 0.95rem;
+  text-decoration: none; cursor: pointer; min-height: 44px;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); font-weight: 700; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.small { padding: 0.5rem 1rem; min-height: 38px; font-size: 0.88rem; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(28px, 5vw, 64px); align-items: center; padding-top: clamp(28px, 6vw, 64px); }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+:root[lang="ar"] .eyebrow, :root[lang="ar"] .logo-sub { letter-spacing: 0; text-transform: none; }
+.hero h1 { font-size: clamp(2.3rem, 6.2vw, 4.4rem); line-height: 1.02; font-weight: 800; letter-spacing: -0.03em; margin-top: 18px; }
+.hero h1::after { content: "."; color: var(--accent); }
+:root[lang="ar"] .hero h1 { letter-spacing: 0; line-height: 1.25; }
+.lede { color: var(--muted); font-size: 1.1rem; max-width: 34em; margin-top: 20px; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.hint { margin-top: 14px; color: var(--muted); font-size: 0.92rem; }
+.hint b { color: var(--fg); letter-spacing: 0.06em; }
+
+/* studio: post editor */
+.studio {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 24px;
+  padding: clamp(16px, 3vw, 28px); display: grid; gap: 20px; min-width: 0;
+  background-image: radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%);
+}
+.studio-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+:root[lang="ar"] .studio-label, :root[lang="ar"] .field label { letter-spacing: 0; text-transform: none; }
+.post-frame { container-type: inline-size; width: 100%; max-width: 440px; margin-inline: auto; }
+.post {
+  --p-bg: #0f1b33; --p-fg: #f4f6fb; --p-ac: #ff5a36; --p-ac-fg: #0f1b33;
+  aspect-ratio: 1 / 1; max-width: 100%; display: flex; flex-direction: column;
+  padding: 6cqw; gap: 3.2cqw; overflow: hidden; border-radius: 4cqw;
+  background: var(--p-bg); color: var(--p-fg); font-size: 14px; font-size: 3.6cqw;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.55);
+  transition: background-color 0.25s, color 0.25s;
+}
+.post[data-look="sun"] { --p-bg: #ffd23f; --p-fg: #1b1606; --p-ac: #1b1606; --p-ac-fg: #ffd23f; }
+.post[data-look="mint"] { --p-bg: #c9efdc; --p-fg: #0d2a20; --p-ac: #0d2a20; --p-ac-fg: #c9efdc; }
+.post[data-look="coral"] { --p-bg: #ff5a36; --p-fg: #1c0b06; --p-ac: #1c0b06; --p-ac-fg: #ffe3da; }
+.post-head { display: flex; align-items: center; gap: 2.4cqw; }
+.avatar { width: 7cqw; height: 7cqw; border-radius: 50%; background: var(--p-ac); flex: none; }
+.handle { font-weight: 700; font-size: 3.6cqw; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag { margin-inline-start: auto; font-size: 2.8cqw; font-weight: 800; letter-spacing: 0.12em; padding: 1cqw 2.4cqw; border: 0.4cqw solid currentColor; border-radius: 99px; white-space: nowrap; }
+:root[lang="ar"] .tag { letter-spacing: 0; }
+.post-photo {
+  flex: 1 1 0; min-height: 0; position: relative; overflow: hidden; border-radius: 3cqw; display: grid; place-items: center;
+  background:
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--p-fg) 10%, transparent) 0 2.2cqw, transparent 2.2cqw 4.4cqw),
+    color-mix(in srgb, var(--p-fg) 6%, transparent);
+}
+.post-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ph-label { font-weight: 700; font-size: 3.4cqw; padding: 1.4cqw 3cqw; border-radius: 99px; background: var(--p-bg); color: var(--p-fg); }
+.post-title { font-family: var(--font-display); font-weight: 800; font-size: 8.4cqw; line-height: 1.05; letter-spacing: -0.02em; white-space: pre-line; overflow-wrap: anywhere; }
+:root[lang="ar"] .post-title { letter-spacing: 0; line-height: 1.3; }
+.post-cta { align-self: flex-start; background: var(--p-ac); color: var(--p-ac-fg); font-weight: 700; font-size: 3.6cqw; padding: 1.8cqw 4cqw; border-radius: 99px; max-width: 100%; overflow-wrap: anywhere; }
+
+.controls { display: grid; gap: 14px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label, .field .lab { font-size: 0.8rem; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
+.field input[type="text"], .field textarea {
+  width: 100%; font: inherit; font-size: 1rem; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 12px; padding: 0.65rem 0.85rem; resize: none;
+}
+.field input[type="text"]:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.swatches { display: flex; gap: 10px; }
+.sw { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); padding: 0; cursor: pointer; }
+.sw[aria-checked="true"] { outline: 2px solid var(--fg); outline-offset: 3px; }
+.sw[data-look="navy"] { background: #0f1b33; }
+.sw[data-look="sun"] { background: #ffd23f; }
+.sw[data-look="mint"] { background: #c9efdc; }
+.sw[data-look="coral"] { background: #ff5a36; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.photo-input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note { font-size: 0.82rem; color: var(--muted); }
+
+/* sections */
+.sec-title { font-size: clamp(1.7rem, 3.8vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+:root[lang="ar"] .sec-title { letter-spacing: 0; line-height: 1.3; }
+.steps { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 4vw, 48px); counter-reset: s; }
+.steps li { border-top: 2px solid var(--line); padding-top: 18px; counter-increment: s; min-width: 0; }
+.steps li::before { content: counter(s); display: block; font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800; font-size: 3rem; line-height: 1; color: var(--accent); margin-bottom: 14px; }
+.steps h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; }
+.steps p { color: var(--muted); margin-top: 8px; }
+
+.free { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: clamp(24px, 5vw, 56px); align-items: center; background: var(--surface-2); border-radius: 28px; padding: clamp(22px, 5vw, 56px); }
+.free p { color: var(--muted); margin-top: 14px; max-width: 30em; }
+.free .btn { margin-top: 24px; }
+.dm { background: var(--bg); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; direction: ltr; min-width: 0; }
+.dm-head { padding: 14px 18px; border-bottom: 1px solid var(--line); font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.dm-head::before { content: ""; width: 26px; height: 26px; border-radius: 50%; background: #0f1b33; border: 1px solid var(--line); }
+.dm-body { padding: 28px 18px 22px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.bubble { background: var(--accent); color: var(--accent-fg); font-weight: 800; letter-spacing: 0.08em; font-size: 1.3rem; padding: 10px 22px; border-radius: 22px 22px 6px 22px; }
+.dm-meta { font-size: 0.78rem; color: var(--muted); }
+
+.contact { list-style: none; margin: 28px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.contact li { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) auto; align-items: center; gap: 8px 20px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+.contact .lab { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+.contact .val { font-family: var(--font-display); font-size: clamp(1.05rem, 2.6vw, 1.5rem); font-weight: 700; overflow-wrap: anywhere; unicode-bidi: isolate; }
+.contact .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.sub { color: var(--muted); margin-top: 10px; }
+
+footer { margin-top: clamp(48px, 8vw, 96px); padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.88rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+.offer-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 28px; }
+.offer { border: 1px solid var(--line); border-radius: 20px; padding: clamp(20px, 3vw, 32px); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; min-width: 0; }
+.offer h3 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; }
+.offer p { color: var(--muted); }
+.offer .btn { margin-top: 8px; }
+@media (max-width: 860px) {
+  .offer-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero, .free { grid-template-columns: minmax(0, 1fr); }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .contact li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .post { transition: none; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#top" aria-label="OSD Design">
+      <span class="logo-word">osd<span class="dot">.</span></span>
+      <span class="logo-sub">DESIGN</span>
+    </a>
+    <button class="btn small" id="lang-btn" type="button" aria-label="Changer de langue / تغيير اللغة">العربية</button>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="eyebrow">Templates Instagram pour business</p>
+        <h1 data-i18n="h1">Des posts Instagram prêts à publier</h1>
+        <p class="lede" data-i18n="lede">Remplace les photos et le texte en quelques minutes. Ton compte reste propre et cohérent, sans repartir de zéro à chaque publication.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="https://www.instagram.com/osdesign.ma/" target="_blank" rel="noopener" data-i18n="cta1">Recevoir le template gratuit</a>
+          <a class="btn" href="https://wa.me/212772082212" target="_blank" rel="noopener" data-i18n="cta2">WhatsApp</a>
+        </div>
+        <p class="hint"><span data-i18n="hint1">Envoie le mot</span> <b>FREE</b> <span data-i18n="hint2">en message privé sur Instagram.</span></p>
+      </div>
+
+      <div class="studio">
+        <p class="studio-label" data-i18n="studio">Essaie, c'est le principe</p>
+        <div class="post-frame">
+          <div class="post" id="post" data-look="navy">
+            <div class="post-head">
+              <span class="avatar"></span>
+              <span class="handle" id="post-handle">@ton_business</span>
+              <span class="tag" id="post-tag">NOUVEAU</span>
+            </div>
+            <div class="post-photo">
+              <span class="ph-label" id="ph-label">Ta photo ici</span>
+              <img id="photo-img" alt="" hidden>
+            </div>
+            <p class="post-title" id="post-title">Nouvelle collection
+-20% ce week-end</p>
+            <span class="post-cta" id="post-cta">Commande en DM</span>
+          </div>
+        </div>
+        <div class="controls">
+          <div class="field">
+            <label for="in-headline" data-i18n="labH">Titre du post</label>
+            <textarea id="in-headline" rows="2" maxlength="60">Nouvelle collection
+-20% ce week-end</textarea>
+          </div>
+          <div class="field">
+            <label for="in-cta" data-i18n="labC">Texte du bouton</label>
+            <input type="text" id="in-cta" maxlength="32" value="Commande en DM">
+          </div>
+          <div class="row">
+            <div class="field">
+              <span class="lab" id="lab-style" data-i18n="labS">Style</span>
+              <div class="swatches" role="radiogroup" aria-labelledby="lab-style">
+                <button type="button" class="sw" id="sw-navy" role="radio" aria-checked="true" data-look="navy" data-i18n-label="sw1" aria-label="Nuit" title="Nuit"></button>
+                <button type="button" class="sw" id="sw-sun" role="radio" aria-checked="false" data-look="sun" data-i18n-label="sw2" aria-label="Soleil" title="Soleil"></button>
+                <button type="button" class="sw" id="sw-mint" role="radio" aria-checked="false" data-look="mint" data-i18n-label="sw3" aria-label="Menthe" title="Menthe"></button>
+                <button type="button" class="sw" id="sw-coral" role="radio" aria-checked="false" data-look="coral" data-i18n-label="sw4" aria-label="Corail" title="Corail"></button>
+              </div>
+            </div>
+            <div class="field">
+              <span class="lab" aria-hidden="true">&nbsp;</span>
+              <input class="photo-input sr-only" type="file" id="photo-input" accept="image/*">
+              <label class="btn small" for="photo-input" data-i18n="labP">Changer la photo</label>
+            </div>
+          </div>
+          <p class="note" data-i18n="note">La photo reste sur ton appareil.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="sec-title" data-i18n="stepsT">Comment ça marche</h2>
+      <ol class="steps">
+        <li><h3 data-i18n="s1t">Choisis un template</h3><p data-i18n="s1d">Un modèle pensé pour ton type de business, prêt à l'emploi.</p></li>
+        <li><h3 data-i18n="s2t">Remplace photos et texte</h3><p data-i18n="s2d">Mets tes images, ton offre et ton prix. Quelques minutes suffisent.</p></li>
+        <li><h3 data-i18n="s3t">Publie</h3><p data-i18n="s3d">Poste sur Instagram et garde le même style sur tout ton compte.</p></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2 class="sec-title" data-i18n="offT">Gratuit ou payant</h2>
+      <div class="offer-grid">
+        <div class="offer">
+          <h3 data-i18n="o1t">Gratuit</h3>
+          <p data-i18n="o1d">Un template pour tester le principe. Envoie le mot FREE en message privé sur Instagram.</p>
+        </div>
+        <div class="offer">
+          <h3 data-i18n="o2t">Payant</h3>
+          <p data-i18n="o2d">Les autres templates sont payants, avec des prix négociables. Écris-nous sur WhatsApp pour en discuter.</p>
+          <a class="btn small primary" href="https://wa.me/212772082212" target="_blank" rel="noopener" data-i18n="o2b">Discuter du prix</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="free" id="free">
+      <div>
+        <h2 class="sec-title" data-i18n="freeT">Un template gratuit pour commencer</h2>
+        <p data-i18n="freeD">Teste le principe avec un vrai template, sans payer. Envoie le mot FREE en message privé à @osdesign.ma.</p>
+        <a class="btn primary" href="https://www.instagram.com/osdesign.ma/" target="_blank" rel="noopener" data-i18n="freeB">Ouvrir Instagram</a>
+      </div>
+      <div class="dm" aria-hidden="true">
+        <div class="dm-head">osdesign.ma</div>
+        <div class="dm-body"><span class="bubble">FREE</span></div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="sec-title" data-i18n="contT">Contact</h2>
+      <p class="sub" data-i18n="contS">Une question ou un besoin précis ? Écris-nous.</p>
+      <ul class="contact">
+        <li>
+          <span class="lab" data-i18n="lEmail">Email</span>
+          <span class="val" id="v-email" dir="ltr">oussydesigne1@gmail.com</span>
+          <span class="acts"><button type="button" class="btn small" id="cp-email" data-copy="v-email" data-i18n="copy">Copier</button></span>
+        </li>
+        <li>
+          <span class="lab" data-i18n="lWa">WhatsApp</span>
+          <span class="val" id="v-wa" dir="ltr">+212 772 082 212</span>
+          <span class="acts">
+            <button type="button" class="btn small" id="cp-wa" data-copy="v-wa" data-i18n="copy">Copier</button>
+            <a class="btn small primary" href="https://wa.me/212772082212" target="_blank" rel="noopener" data-i18n="open">Ouvrir</a>
+          </span>
+        </li>
+        <li>
+          <span class="lab" data-i18n="lIg">Instagram</span>
+          <span class="val" id="v-ig" dir="ltr">@osdesign.ma</span>
+          <span class="acts">
+            <button type="button" class="btn small" id="cp-ig" data-copy="v-ig" data-i18n="copy">Copier</button>
+            <a class="btn small primary" href="https://www.instagram.com/osdesign.ma/" target="_blank" rel="noopener" data-i18n="open">Ouvrir</a>
+          </span>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <span>osd. DESIGN</span>
+    <span data-i18n="foot">Templates Instagram prêts à l'emploi · Maroc</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var T = {
+    fr: {
+      eyebrow: "Templates Instagram pour business",
+      h1: "Des posts Instagram prêts à publier",
+      lede: "Remplace les photos et le texte en quelques minutes. Ton compte reste propre et cohérent, sans repartir de zéro à chaque publication.",
+      cta1: "Recevoir le template gratuit", cta2: "WhatsApp",
+      hint1: "Envoie le mot", hint2: "en message privé sur Instagram.",
+      studio: "Essaie, c'est le principe",
+      labH: "Titre du post", labC: "Texte du bouton", labS: "Style", labP: "Changer la photo",
+      note: "La photo reste sur ton appareil.",
+      sw1: "Nuit", sw2: "Soleil", sw3: "Menthe", sw4: "Corail",
+      stepsT: "Comment ça marche",
+      s1t: "Choisis un template", s1d: "Un modèle pensé pour ton type de business, prêt à l'emploi.",
+      s2t: "Remplace photos et texte", s2d: "Mets tes images, ton offre et ton prix. Quelques minutes suffisent.",
+      s3t: "Publie", s3d: "Poste sur Instagram et garde le même style sur tout ton compte.",
+      offT: "Gratuit ou payant",
+      o1t: "Gratuit", o1d: "Un template pour tester le principe. Envoie le mot FREE en message privé sur Instagram.",
+      o2t: "Payant", o2d: "Les autres templates sont payants, avec des prix négociables. Écris-nous sur WhatsApp pour en discuter.", o2b: "Discuter du prix",
+      freeT: "Un template gratuit pour commencer",
+      freeD: "Teste le principe avec un vrai template, sans payer. Envoie le mot FREE en message privé à @osdesign.ma.",
+      freeB: "Ouvrir Instagram",
+      contT: "Contact", contS: "Une question ou un besoin précis ? Écris-nous.",
+      lEmail: "Email", lWa: "WhatsApp", lIg: "Instagram",
+      copy: "Copier", copied: "Copié", selected: "Sélectionné", open: "Ouvrir",
+      foot: "Templates Instagram prêts à l'emploi · Maroc",
+      defH: "Nouvelle collection\n-20% ce week-end", defC: "Commande en DM",
+      tag: "NOUVEAU", handle: "@ton_business", ph: "Ta photo ici", other: "العربية"
+    },
+    ar: {
+      eyebrow: "قوالب إنستغرام للأعمال",
+      h1: "منشورات إنستغرام جاهزة للنشر",
+      lede: "غيّر الصور والنص في دقائق قليلة. يبقى حسابك أنيقًا ومتناسقًا دون أن تبدأ من الصفر في كل منشور.",
+      cta1: "احصل على القالب المجاني", cta2: "واتساب",
+      hint1: "أرسل كلمة", hint2: "في رسالة خاصة على إنستغرام.",
+      studio: "جرّب بنفسك",
+      labH: "عنوان المنشور", labC: "نص الزر", labS: "النمط", labP: "تغيير الصورة",
+      note: "الصورة تبقى على جهازك.",
+      sw1: "ليلي", sw2: "شمسي", sw3: "نعناعي", sw4: "مرجاني",
+      stepsT: "كيف يعمل",
+      s1t: "اختر قالبًا", s1d: "نموذج مناسب لنوع نشاطك، جاهز للاستعمال.",
+      s2t: "بدّل الصور والنص", s2d: "ضع صورك وعرضك وثمنك. بضع دقائق تكفي.",
+      s3t: "انشر", s3d: "انشر على إنستغرام وحافظ على نفس الأسلوب في كل حسابك.",
+      offT: "مجاني أو مدفوع",
+      o1t: "مجاني", o1d: "قالب واحد لتجربة الفكرة. أرسل كلمة FREE في رسالة خاصة على إنستغرام.",
+      o2t: "مدفوع", o2d: "باقي القوالب مدفوعة، والأثمنة قابلة للتفاوض. راسلنا على واتساب لنتفق.", o2b: "تفاوض على الثمن",
+      freeT: "قالب مجاني للبداية",
+      freeD: "جرّب الفكرة بقالب حقيقي دون دفع. أرسل كلمة FREE في رسالة خاصة إلى @osdesign.ma.",
+      freeB: "افتح إنستغرام",
+      contT: "تواصل معنا", contS: "عندك سؤال أو طلب خاص؟ راسلنا.",
+      lEmail: "البريد الإلكتروني", lWa: "واتساب", lIg: "إنستغرام",
+      copy: "نسخ", copied: "تم النسخ", selected: "تم التحديد", open: "فتح",
+      foot: "قوالب إنستغرام جاهزة للاستعمال · المغرب",
+      defH: "تشكيلة جديدة\nخصم 20% نهاية الأسبوع", defC: "اطلب عبر الرسائل",
+      tag: "جديد", handle: "@your_business", ph: "صورتك هنا", other: "Français"
+    }
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var lang = "fr";
+  var dirty = { h: false, c: false };
+  var elH = $("in-headline"), elC = $("in-cta");
+  var pt = $("post-title"), pc = $("post-cta");
+
+  function render() {
+    pt.textContent = elH.value;
+    pc.textContent = elC.value;
+  }
+
+  function setLang(l) {
+    lang = l;
+    var d = T[l];
+    var root = document.documentElement;
+    root.lang = l;
+    root.dir = l === "ar" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      if (d[el.dataset.i18n] !== undefined) el.textContent = d[el.dataset.i18n];
+    });
+    document.querySelectorAll("[data-i18n-label]").forEach(function (el) {
+      var t = d[el.dataset.i18nLabel];
+      el.setAttribute("aria-label", t);
+      el.setAttribute("title", t);
+    });
+    if (!dirty.h) elH.value = d.defH;
+    if (!dirty.c) elC.value = d.defC;
+    $("post-tag").textContent = d.tag;
+    $("post-handle").textContent = d.handle;
+    $("ph-label").textContent = d.ph;
+    $("lang-btn").textContent = d.other;
+    render();
+  }
+
+  elH.addEventListener("input", function () { dirty.h = true; render(); });
+  elC.addEventListener("input", function () { dirty.c = true; render(); });
+
+  $("lang-btn").addEventListener("click", function () {
+    setLang(lang === "fr" ? "ar" : "fr");
+  });
+
+  var sws = document.querySelectorAll(".sw");
+  sws.forEach(function (b) {
+    b.addEventListener("click", function () {
+      $("post").dataset.look = b.dataset.look;
+      sws.forEach(function (o) { o.setAttribute("aria-checked", o === b ? "true" : "false"); });
+    });
+  });
+
+  $("photo-input").addEventListener("change", function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f || f.type.indexOf("image/") !== 0) return;
+    var r = new FileReader();
+    r.onload = function () {
+      var img = $("photo-img");
+      img.src = r.result;
+      img.hidden = false;
+      $("ph-label").hidden = true;
+    };
+    r.readAsDataURL(f);
+  });
+
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var src = $(btn.dataset.copy);
+      var text = src.textContent.trim();
+      function done(msgKey) {
+        btn.textContent = T[lang][msgKey];
+        setTimeout(function () { btn.textContent = T[lang].copy; }, 1600);
+      }
+      function fallback() {
+        try {
+          var range = document.createRange();
+          range.selectNodeContents(src);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        } catch (err) {}
+        done("selected");
+      }
+      try {
+        navigator.clipboard.writeText(text).then(function () { done("copied"); }, fallback);
+      } catch (err) { fallback(); }
+    });
+  });
+
+  setLang("fr");
+})();
+</script>
+</body>
+</html>
